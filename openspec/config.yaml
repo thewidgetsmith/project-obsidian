@@ -1,0 +1,59 @@
+schema: spec-driven
+
+# Constraints an agent cannot infer from the code. Project conventions live in
+# AGENTS.md; this block only shapes OpenSpec artifacts.
+context: |
+  Project Obsidian: firmware for a Mecanum-wheel rover. Two MCUs joined by a
+  UART link: XIAO ESP32-S3 Sense (ESP-IDF via PlatformIO; camera, Wi-Fi web
+  UI, audio, link manager) and ATmega328P (Arduino via PlatformIO; motors,
+  kinematics, gimbal servo, battery ADC). firmware/shared/ holds header-only
+  C code both boards compile.
+  - Hardware facts (pins, timers, wiring) live only in docs/hardware/. Link
+    them; never restate pin numbers in a spec.
+  - Board-tree layout rules: docs/reference/layout-xiao.md and
+    docs/reference/layout-atmega.md.
+  - Automated verification is host-side only: PlatformIO native Unity tests
+    against a mocked HAL, plus format, lint and build. Anything needing a
+    board is a hardware-in-the-loop (HIL) check that only the user performs.
+  - The gate is `tools/check.sh` (= tools/verify.sh); work is done only when
+    it prints VERIFY PASS. Agents never run pio/clang-tidy/cppcheck directly.
+  - Implementation is done by OpenCode agents on small local models (Qwen via
+    LiteLLM), one task per developer run, with limited context. Artifacts must be explicit enough that the implementer
+    never has to infer a signature, constant, payload layout or test name.
+  - No new third-party dependencies without the user's approval.
+  - Refer to repo files as backticked repo-root paths (`docs/hardware/x.md`),
+    never relative Markdown links: artifacts move when a change is archived.
+
+rules:
+  proposal:
+    - State what is out of scope and which later change picks it up.
+    - List every hardware-in-the-loop check under Impact as "HIL (user)".
+  specs:
+    - One capability per cohesive behavior (e.g. uart-protocol, xiao-hal); never a catch-all.
+    - Scenarios must be checkable by a host unit test or by a named HIL check. Prefix HIL-only scenarios' names with "HIL:".
+    - Link docs/hardware/ for pins and wiring instead of stating them.
+  design:
+    - Give exact C/C++ signatures, constant names and values, payload byte layouts, file paths from the repo root, and Unity test names (test_<module>_<behavior>).
+    - Mark choices the specs leave open as "(planner decision)".
+    - List open questions only the user can answer under "Open Questions".
+  tasks:
+    - Each checkbox task is one developer run (at most 40 agent steps) - one module or concern, at most about 5 files, landing its own tests. Group tasks under headings by module.
+    - Every task names the files it touches with full paths and ends with how it is verified, normally "tools/check.sh <board> passes" plus the named tests.
+    - Each task must leave tools/check.sh passing; if a task breaks a caller, fix the caller in that task. Mark a task "[reasoning]" when it needs a design-level decision.
+    - Do not create a task for hardware-in-the-loop checks; list them in a final "## HIL checks (user)" section as plain bullets, not checkboxes.
+
+operations:
+  apply:
+    guidance:
+      - "Applied by the OpenCode orchestrator (.opencode/agents/orchestrator.md): one developer run per task, never a range of tasks."
+      - "design.md is binding: signatures, names, constants, file paths and test names come from it."
+      - "The check is tools/check.sh; a task is done only when it ends with VERIFY PASS. Use tools/log.sh STEP for detail; never run pio, clang-tidy or cppcheck directly."
+      - "Work on the change's branch (named after the change), never on main. After each task: tick it in tasks.md, then commit '<change-id>: <task number> <summary>'."
+      - "Never tick, perform or claim the '## HIL checks (user)' bullets; copy them into the PR body as an unticked checklist."
+      - "Finish with git push -u origin HEAD and tools/pr.sh TITLE BODY_FILE. If tools/pr.sh exits 3 (no PR tool), stop and ask the human to open the PR."
+      - "Stop and ask the human only when: a task needs a decision listed under design.md Open Questions; a task fails after four developer runs; the change would need a new third-party dependency, a docs/hardware/ edit, or a spec/design change; or a push or PR fails."
+      - "Never commit secrets or anything from ~/.config/; tools/check-secrets.py must pass."
+  archive:
+    guidance:
+      - "Archive only after the PR is merged and the user confirms the HIL checks (or says to defer them)."
+      - "Run tools/check.sh all --all-files on main before archiving and report its summary line."

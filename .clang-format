@@ -1,0 +1,29 @@
+# Project Obsidian — Shared clang-format configuration
+# Applies to both ESP32-S3 and ATmega328P firmware
+
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+IndentCaseLabels: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+IndentWrappedFunctionNames: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+BreakBeforeBraces: Attach
+
+NamespaceIndentation: None
+PointerAlignment: Left
+ReferenceAlignment: Left
+AlignEscapedNewlinesLeft: false
+AlignTrailingComments: true
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false

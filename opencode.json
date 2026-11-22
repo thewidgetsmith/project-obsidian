@@ -1,0 +1,72 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "orchestrator",
+  "model": "litellm/local-qwen-3.6-35b-a3b",
+  "permissions": [
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "tools/*.sh*", "effect": "allow" },
+    { "action": "shell", "resource": "tools/*.py*", "effect": "allow" },
+    { "action": "shell", "resource": "openspec list*", "effect": "allow" },
+    { "action": "shell", "resource": "openspec show*", "effect": "allow" },
+    { "action": "shell", "resource": "openspec status*", "effect": "allow" },
+    { "action": "shell", "resource": "openspec validate*", "effect": "allow" },
+    { "action": "shell", "resource": "openspec instructions*", "effect": "allow" },
+    { "action": "shell", "resource": "git status*", "effect": "allow" },
+    { "action": "shell", "resource": "git diff*", "effect": "allow" },
+    { "action": "shell", "resource": "git log*", "effect": "allow" },
+    { "action": "shell", "resource": "git show*", "effect": "allow" },
+    { "action": "shell", "resource": "tools/container.sh*", "effect": "deny" },
+    { "action": "shell", "resource": "git commit*", "effect": "deny" },
+    { "action": "shell", "resource": "git push*", "effect": "deny" },
+    { "action": "shell", "resource": "git reset --hard*", "effect": "deny" },
+    { "action": "shell", "resource": "git checkout main*", "effect": "deny" },
+    { "action": "shell", "resource": "pio *", "effect": "deny" },
+    { "action": "shell", "resource": "platformio *", "effect": "deny" },
+    { "action": "shell", "resource": "sudo *", "effect": "deny" },
+    { "action": "shell", "resource": "distrobox *", "effect": "deny" },
+    { "action": "shell", "resource": "env", "effect": "deny" },
+    { "action": "shell", "resource": "printenv*", "effect": "deny" },
+    { "action": "shell", "resource": "*LITELLM*", "effect": "deny" },
+    { "action": "shell", "resource": "*obsidian.env*", "effect": "deny" },
+    { "action": "read", "resource": "*obsidian.env", "effect": "deny" },
+    { "action": "edit", "resource": "opencode.json", "effect": "deny" },
+    { "action": "edit", "resource": ".opencode/*", "effect": "deny" },
+    { "action": "edit", "resource": "AGENTS.md", "effect": "deny" },
+    { "action": "edit", "resource": "tools/*", "effect": "deny" },
+    { "action": "edit", "resource": ".github/*", "effect": "deny" }
+  ],
+  "providers": {
+    "litellm-claude": {
+      "name": "Claude via LiteLLM (API credits)",
+      "package": "@opencode/ai/providers/anthropic-compatible",
+      "settings": {
+        "baseURL": "{env:LITELLM_BASE_URL}",
+        "apiKey": "{env:LITELLM_API_KEY}"
+      },
+      "models": {
+        "claude-opus-5-5": { "name": "Claude Opus 5.5" },
+        "claude-sonnet-5-5": { "name": "Claude Sonnet 5.5" },
+        "claude-haiku-5-5": { "name": "Claude Haiku 5.5" }
+      }
+    },
+    "litellm": {
+      "name": "Local models via LiteLLM",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "{env:LITELLM_BASE_URL}",
+        "apiKey": "{env:LITELLM_API_KEY}"
+      },
+      "models": {
+        "local-qwen-3.8-27b": {
+          "name": "Qwen 3.8 27B (llama0)",
+          "limit": { "context": 131072, "output": 32768 }
+        },
+        "local-qwen-3.6-35b-a3b": {
+          "name": "Qwen 3.6 35B-A3B (llama1)",
+          "limit": { "context": 131072, "output": 32768 }
+        },
+        "deepseek-reasoner": { "name": "DeepSeek Reasoner (API credits)" }
+      }
+    }
+  }
+}

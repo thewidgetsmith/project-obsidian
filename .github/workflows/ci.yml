@@ -1,0 +1,44 @@
+name: CI — verify
+
+# Runs the same gate agents use (tools/verify.sh) inside the same toolbox
+# image. Gitea Actions on a self-hosted runner in host mode, with podman (or
+# docker: set CONTAINER_ENGINE) on the runner. See .github/README.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CONTAINER_ENGINE: podman
+  IMAGE: localhost/obsidian-dev:ci
+
+jobs:
+  verify:
+    name: tools/verify.sh all --all-files
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build toolbox image
+        run: |
+          "$CONTAINER_ENGINE" build -q -t "$IMAGE" \
+            -f tools/container/Containerfile tools/container
+
+      - name: Verify
+        run: |
+          # PlatformIO packages persist in a named volume between runs.
+          "$CONTAINER_ENGINE" run --rm \
+            -v "$PWD:/work:Z" -w /work \
+            -v obsidian-pio:/pio \
+            -e PLATFORMIO_CORE_DIR=/pio \
+            "$IMAGE" tools/verify.sh all --all-files
+
+      - name: Show failing step details
+        if: failure()
+        run: |
+          for step in $(grep -oE '^FAIL +[^ ]+' .verify/summary.txt | awk '{print $2}'); do
+            tools/log.sh "$step" -n 80
+          done

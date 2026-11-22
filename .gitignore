@@ -1,0 +1,71 @@
+# PlatformIO build artifacts
+.pio/
+.pioenvs/
+.piolib/
+.pioinstall/
+build/
+deps/
+
+# PlatformIO IDE cache
+.pio_ide_cache/
+
+# ESP-IDF build artifacts (if building locally)
+build/
+sdkconfig
+sdkconfig.old
+*~
+*.pyc
+
+# Arduino build artifacts (if building locally)
+*.elf
+*.map
+*.bin
+*.hex
+*.a
+*.o
+*.d
+
+# IDE files
+.idea/
+.vscode/c_cpp_properties.json
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated binaries from builds
+*.elf
+*.map
+*.bin
+
+# Coverage data
+gcov/
+lcov/
+*.gcov
+*.gcda
+*.gcno
+*.gcov
+
+# Cppcheck output
+.cppcheck-out/
+
+# Generated compile databases (pio run -t compiledb)
+firmware/*/compile_commands.json
+
+# tools/verify.sh logs
+.verify/
+
+# OS junk
+desktop.ini
+
+# Vendor kit downloads and archived material (local reference only)
+reference/
+
+# Secrets never live in the repo (see tools/obsidian.env.example)
+*.env
+.env*
+!tools/obsidian.env.example
+!tools/container/versions.env

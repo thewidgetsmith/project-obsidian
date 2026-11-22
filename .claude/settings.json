@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tools/check.sh:*)", "Bash(tools/verify.sh:*)", "Bash(tools/test.sh:*)",
+      "Bash(tools/build.sh:*)", "Bash(tools/lint.sh:*)", "Bash(tools/format.sh:*)",
+      "Bash(tools/log.sh:*)", "Bash(tools/diff.sh:*)", "Bash(tools/outline.sh:*)",
+      "Bash(tools/check-docs.py:*)", "Bash(tools/check-rules.py:*)", "Bash(tools/check-secrets.py:*)",
+      "Bash(openspec list:*)", "Bash(openspec show:*)", "Bash(openspec status:*)",
+      "Bash(openspec validate:*)", "Bash(openspec instructions:*)", "Bash(openspec new change:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)"
+    ],
+    "ask": [
+      "Bash(openspec archive:*)", "Bash(git commit:*)", "Bash(git push:*)",
+      "Bash(git reset:*)", "Bash(git checkout:*)", "Bash(tools/container.sh:*)",
+      "Bash(tools/opencode.sh:*)", "Bash(pio:*)"
+    ],
+    "deny": [
+      "Read(~/.config/litellm/**)",
+      "Bash(printenv:*)"
+    ]
+  }
+}

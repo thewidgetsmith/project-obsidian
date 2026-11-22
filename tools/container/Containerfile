@@ -1,0 +1,50 @@
+# Project Obsidian toolbox image
+#
+# One image for every place the checks run:
+#   - locally as the `obsidian-dev` distrobox (tools/container.sh create)
+#   - in CI (.github/workflows/ci.yml runs tools/verify.sh inside it)
+#
+# Contents: PlatformIO (pinned), host gcc/g++ for the Unity tests,
+# clang-format / clang-tidy / cppcheck, Python 3, and Node + OpenSpec (pinned)
+# for `openspec validate`. Cross-compilers (avr-gcc, Xtensa/ESP-IDF) are
+# fetched by PlatformIO into $PLATFORMIO_CORE_DIR (see tools/lib/env.sh), not
+# baked in, so the image stays small and toolchains survive image rebuilds.
+#
+# No USER line: distrobox creates a user matching the host user, and CI runs
+# as root. Bump a pinned version deliberately, then `tools/container.sh build`.
+
+FROM docker.io/library/node:22-trixie-slim AS node
+
+FROM docker.io/library/debian:trixie-slim
+
+ARG PLATFORMIO_VERSION=6.2.0
+ARG OPENSPEC_VERSION=2.1.1
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Debian trixie: gcc 14, clang 19, cppcheck 2.17, python 3.13.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        bash ca-certificates curl file git less procps \
+        build-essential python3 python3-venv \
+        clang-format clang-tidy cppcheck \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node 22 (OpenSpec needs >= 22.20; Debian ships 20) from the official image.
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    && npm install -g --no-fund --no-audit "@fission-ai/openspec@${OPENSPEC_VERSION}" \
+    && npm cache clean --force
+
+# PlatformIO in its own venv, on PATH for every shell.
+RUN python3 -m venv /opt/platformio \
+    && /opt/platformio/bin/pip install --no-cache-dir "platformio==${PLATFORMIO_VERSION}" \
+    && ln -s /opt/platformio/bin/pio /usr/local/bin/pio \
+    && ln -s /opt/platformio/bin/platformio /usr/local/bin/platformio
+
+# tools/lib/env.sh looks for this file to know it is inside the toolbox.
+RUN printf 'platformio=%s\nopenspec=%s\n' "${PLATFORMIO_VERSION}" "${OPENSPEC_VERSION}" \
+        > /etc/obsidian-toolbox
