@@ -14,6 +14,9 @@ a UART link. Overview: [README.md](README.md). How work flows:
 | `docs/hardware/` | Pin maps and wiring — the only place GPIO assignments are decided |
 | `docs/reference/` | Board-tree layout rules and toolchain details |
 | `tools/` | Verification scripts shared by agents and CI ([tools/README.md](tools/README.md)) |
+| `.opencode/agents/` | OpenCode agent definitions (orchestrator and helpers) |
+| `.agents/skills/` | OpenSpec skills, the single copy; OpenCode reads it directly, `.claude/skills/` links to it. `openspec update` regenerates it |
+| `.claude/` | Claude Code settings and its guide, `spec-planning.md` |
 
 ## Your Role
 

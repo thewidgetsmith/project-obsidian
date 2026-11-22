@@ -227,4 +227,13 @@ Full loop and roles: [docs/workflow.md](docs/workflow.md). Feature order:
 
 ## License
 
-TBD
+[MIT No Attribution (MIT-0)](LICENSE): use, copy, modify and redistribute the
+code and documentation freely, for any purpose, without asking.
+
+Attribution is appreciated but not required. If this project helps you, a
+link back to the repository or the project's blog posts is a kind gesture.
+
+**No warranty.** The software, documentation and designs are provided "as
+is", with no warranty of any kind, including for the behavior of a rover
+built from them. A rover has motors, batteries and moving parts: build and
+test it at your own risk.
